@@ -6,6 +6,103 @@
   font-family: "Outfit", sans-serif;
 }
 
+:root {
+  --sidebar-width: 220px;
+  --navbar-height: 60px;
+  --color-bg: #f9fafb;
+  --color-sidebar-bg: #ffffff;
+  --color-border: #e5e7eb;
+  --color-accent: #3B82F6;
+  --color-accent-light: #eff6ff;
+  --color-text: #111827;
+  --color-muted: #6b7280;
+  --color-active-border: #3B82F6;
+}
+
+.owner-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  font-size: 14px;
+  width: 100%;
+  border-right: 3px solid transparent;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+.owner-link:hover {
+  background-color: #f3f4f6;
+}
+
+.owner-link-active {
+  background-color: var(--color-accent-light);
+  color: var(--color-accent);
+  border-right-color: var(--color-active-border);
+  font-weight: 600;
+}
+
+.owner-link-inactive {
+  color: #374151;
+}
+
+.owner-profile {
+  animation: owner-scale-up 300ms ease both;
+}
+
+.owner-link-animate {
+  animation: owner-fade-left 400ms ease both;
+}
+
+.owner-page-animate {
+  animation: owner-fade 250ms ease both;
+}
+
+.owner-title-animate {
+  animation: owner-fade-up 300ms ease both;
+}
+
+@keyframes owner-fade-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes owner-scale-up {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes owner-fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes owner-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @theme {
   --color-primary: #2563EB;
   --color-secondary: #1F58D8;
@@ -59,12 +156,31 @@
   box-shadow: 0 18px 30px rgba(30, 58, 138, 0.16);
 }
 
+.float-x {
+  animation: float-x 3.75s linear infinite;
+}
+
+@keyframes float-x {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(12px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal,
   .featured-card,
   .featured-image,
-  .testimonial-card {
+  .testimonial-card,
+  .float-x,
+  .owner-profile,
+  .owner-link-animate,
+  .owner-page-animate,
+  .owner-title-animate {
     transition: none;
     transform: none;
+    animation: none;
   }
 }

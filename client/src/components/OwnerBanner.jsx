@@ -21,7 +21,7 @@ const OwnerBanner = () => {
           </div>
           <div className="flex w-full max-w-md justify-center">
             <img
-              className="w-full max-w-md drop-shadow-[0_20px_30px_rgba(30,58,138,0.35)]"
+              className="float-x w-full max-w-md drop-shadow-[0_20px_30px_rgba(30,58,138,0.35)]"
               src={assets.banner_car_image}
               alt="Luxury car"
               loading="lazy"

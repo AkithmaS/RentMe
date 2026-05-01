@@ -1,11 +1,13 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { assets, dummyCarData } from '../assets/assets'
 
 const FeaturedVehicles = () => {
+  const navigate = useNavigate()
   const featured = dummyCarData.slice(0, 3)
 
   return (
-    <section className="w-full bg-white">
+    <section id="featured-vehicles" className="w-full bg-white">
       <div className="mx-auto flex w-full max-w-6xl flex-col items-center px-6 py-20 text-center">
         <h2
           className="reveal text-2xl font-bold text-slate-800 sm:text-3xl"
@@ -24,8 +26,9 @@ const FeaturedVehicles = () => {
           {featured.map((car, index) => (
             <article
               key={car._id}
-              className="featured-card reveal overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-md shadow-slate-200/60"
+              className="featured-card reveal cursor-pointer overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-md shadow-slate-200/60 transition hover:-translate-y-1 hover:shadow-lg"
               style={{ '--reveal-delay': `${0.18 + index * 0.12}s` }}
+              onClick={() => navigate(`/cars/${car._id}`, { state: { car } })}
             >
               <div className="relative">
                 <img
@@ -74,6 +77,7 @@ const FeaturedVehicles = () => {
         </div>
 
         <button
+          onClick={() => navigate('/cars')}
           className="reveal mt-12 inline-flex items-center gap-2 rounded-lg border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-600 transition hover:border-slate-300 hover:text-slate-800"
           style={{ '--reveal-delay': '0.6s' }}
         >

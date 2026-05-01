@@ -1,6 +1,32 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { dummyUserData } from '../assets/assets'
+import Login from './Login'
+
+const getStoredUser = () => {
+  if (typeof window === 'undefined') return dummyUserData
+
+  const storageKeys = ['user', 'userData', 'currentUser']
+  for (const key of storageKeys) {
+    const raw = window.localStorage.getItem(key)
+    if (!raw) continue
+
+    try {
+      const parsed = JSON.parse(raw)
+      if (parsed?.name) return parsed
+    } catch (error) {
+      // Ignore invalid JSON and fall back to defaults.
+    }
+  }
+
+  return dummyUserData
+}
 
 const Navbar = () => {
+  const [isLoginOpen, setIsLoginOpen] = useState(false)
+  const user = getStoredUser()
+  const isOwner = user?.role === 'owner'
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-black/5 bg-white">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-6 py-4">
@@ -12,15 +38,15 @@ const Navbar = () => {
         </div>
 
         <nav className="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
-          <a className="transition hover:text-slate-900" href="#">
+          <Link className="transition hover:text-slate-900" to="/Home">
             Home
-          </a>
-          <a className="transition hover:text-slate-900" href="#">
+          </Link>
+          <Link className="transition hover:text-slate-900" to="/Cars">
             Cars
-          </a>
-          <a className="transition hover:text-slate-900" href="#">
-            About
-          </a>
+          </Link>
+          <Link className="transition hover:text-slate-900" to="/MyBookings">
+            My Bookings
+          </Link>
         </nav>
 
         <div className="flex items-center gap-4">
@@ -43,14 +69,22 @@ const Navbar = () => {
             />
           </div>
 
-          <a className="text-sm font-medium text-slate-600 hover:text-slate-900" href="#">
-            List a car
-          </a>
-          <button className="rounded-full bg-[#3B5BFC] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110">
-            Sign up
+          {isOwner ? (
+            <Link className="text-sm font-medium text-slate-600 hover:text-slate-900" to="/owner/dashboard">
+              Dashboard
+            </Link>
+          ) : null}
+          <button
+            className="rounded-full bg-[#3B5BFC] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
+            onClick={() => setIsLoginOpen(true)}
+            type="button"
+          >
+            Login
           </button>
         </div>
       </div>
+
+      <Login isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </header>
   )
 }

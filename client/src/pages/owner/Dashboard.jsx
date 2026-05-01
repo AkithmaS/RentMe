@@ -160,7 +160,7 @@ const Dashboard = () => {
 				</div>
 			</div>
 
-			<div className="mt-auto">
+			<div className="mt-48">
 				<Footer />
 			</div>
 		</section>

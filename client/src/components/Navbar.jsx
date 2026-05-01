@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { dummyUserData } from '../assets/assets'
+import Login from './Login'
 
 const getStoredUser = () => {
   if (typeof window === 'undefined') return dummyUserData
@@ -22,6 +23,7 @@ const getStoredUser = () => {
 }
 
 const Navbar = () => {
+  const [isLoginOpen, setIsLoginOpen] = useState(false)
   const user = getStoredUser()
   const isOwner = user?.role === 'owner'
 
@@ -72,11 +74,17 @@ const Navbar = () => {
               Dashboard
             </Link>
           ) : null}
-          <button className="rounded-full bg-[#3B5BFC] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110">
-            Sign up
+          <button
+            className="rounded-full bg-[#3B5BFC] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
+            onClick={() => setIsLoginOpen(true)}
+            type="button"
+          >
+            Login
           </button>
         </div>
       </div>
+
+      <Login isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </header>
   )
 }

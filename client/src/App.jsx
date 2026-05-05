@@ -10,11 +10,14 @@ import Dashboard from './pages/owner/Dashboard'
 import AddCar from './pages/owner/AddCar'
 import ManageCars from './pages/owner/ManageCars'
 import ManageBookings from './pages/owner/ManageBookings'
+import {Toaster} from 'react-hot-toast'
 
 const App = () => {
   return (
     <>
       <ScrollToTop />
+      <Toaster />
+
       <Routes>
         <Route path='/' element={<Navigate to="/Home" replace />} />
         <Route path='/Home' element={<Home />} />

@@ -13,8 +13,12 @@ import ManageBookings from './pages/owner/ManageBookings'
 import {Toaster} from 'react-hot-toast'
 
 const App = () => {
-  return (
-    <>
+  
+    const showLogin = useAppContext()
+    const isOwnerPath  = useLocation().pathname.startsWith('/owner')
+
+    return (
+      <>
       <ScrollToTop />
       <Toaster />
 

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
 import CarDetails from './pages/CarDetails'
@@ -13,10 +12,6 @@ import ManageBookings from './pages/owner/ManageBookings'
 import {Toaster} from 'react-hot-toast'
 
 const App = () => {
-  
-    const showLogin = useAppContext()
-    const isOwnerPath  = useLocation().pathname.startsWith('/owner')
-
     return (
       <>
       <ScrollToTop />

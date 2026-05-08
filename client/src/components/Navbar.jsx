@@ -4,7 +4,7 @@ import { AppContext } from '../context/AppContext'
 import Login from './Login'
 
 const Navbar = () => {
-  const { user, isOwner, logout, showLogin, setShowLogin } = useContext(AppContext)
+  const { user, logout, showLogin, setShowLogin } = useContext(AppContext)
 
   return (
     <>
@@ -49,8 +49,11 @@ const Navbar = () => {
               />
             </div>
 
-            {isOwner ? (
-              <Link className="text-sm font-medium text-slate-600 hover:text-slate-900" to="/owner/dashboard">
+            {user ? (
+              <Link
+                className="rounded-full border border-[#3B5BFC] px-5 py-2 text-sm font-semibold text-[#3B5BFC] transition hover:bg-[#eff4ff]"
+                to="/owner/dashboard"
+              >
                 Dashboard
               </Link>
             ) : null}

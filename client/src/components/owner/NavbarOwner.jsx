@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { assets, dummyUserData } from '../../assets/assets'
 
 const getStoredUser = () => {
@@ -33,7 +34,15 @@ const NavbarOwner = () => {
 					</span>
 					<span>RentMe</span>
 				</div>
-				<div className="text-sm font-medium text-slate-600">Welcome, {user?.name || 'Owner'}</div>
+				<div className="flex items-center gap-4">
+					<Link
+						className="rounded-full bg-[#3B5BFC] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
+						to="/owner/dashboard"
+					>
+						Dashboard
+					</Link>
+					<div className="text-sm font-medium text-slate-600">Welcome, {user?.name || 'Owner'}</div>
+				</div>
 			</div>
 		</header>
 	)

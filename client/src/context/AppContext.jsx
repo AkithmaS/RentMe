@@ -20,7 +20,7 @@ export const AppProvider = ({ children }) => {
 
     const fetchUser = async () => {
         try {
-            const { data } = await axios.get('/api/user')
+            const { data } = await axios.get('/api/user/data')
 
             if (data.success) {
                 setUser(data.user)

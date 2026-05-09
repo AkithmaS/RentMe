@@ -100,9 +100,6 @@ export const deleteCar = async (req, res) => {
     export const getDashboardData = async (req, res) => {
         try {
             const { _id } = req.user;
-            if (req.user.role !== "owner") {
-                return res.json({ success: false, message: "Not authorized to access dashboard data" });
-            }
 
             const cars = await Car.find({ owner: _id });
             const bookings = await Booking.find({ owner: _id }).populate('car').sort({ createdAt: -1 });

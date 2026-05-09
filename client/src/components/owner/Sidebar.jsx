@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { assets, dummyUserData } from '../../assets/assets'
+import { toast } from 'react-hot-toast'
+import { assets } from '../../assets/assets'
+import { useAppContext } from '../../context/AppContext'
 
 const ownerLinks = [
 	{
@@ -29,28 +31,45 @@ const ownerLinks = [
 	},
 ]
 
-const getStoredUser = () => {
-	if (typeof window === 'undefined') return dummyUserData
+const Sidebar = () => {
+	const { user, axios, setUser } = useAppContext()
+	const fileInputRef = useRef(null)
+	const [isUploading, setIsUploading] = useState(false)
+	const profileImage = user?.image || user?.avatar || assets.user_profile
 
-	const storageKeys = ['user', 'userData', 'currentUser']
-	for (const key of storageKeys) {
-		const raw = window.localStorage.getItem(key)
-		if (!raw) continue
-
-		try {
-			const parsed = JSON.parse(raw)
-			if (parsed?.name) return parsed
-		} catch (error) {
-			// Ignore invalid JSON and fall back to defaults.
-		}
+	const handleFileClick = () => {
+		fileInputRef.current?.click()
 	}
 
-	return dummyUserData
-}
+	const handleImageChange = async (event) => {
+		const selectedFile = event.target.files?.[0]
+		if (!selectedFile) return
 
-const Sidebar = () => {
-	const user = getStoredUser()
-	const profileImage = user?.image || user?.avatar || assets.user_profile
+		try {
+			setIsUploading(true)
+
+			const formData = new FormData()
+			formData.append('image', selectedFile)
+
+			const { data } = await axios.post('/api/owner/updateprofile', formData)
+
+			if (!data.success) {
+				toast.error(data.message || 'Failed to update profile image')
+				return
+			}
+
+			setUser((currentUser) => ({
+				...currentUser,
+				image: data.image,
+			}))
+			toast.success('Profile image updated successfully')
+		} catch (error) {
+			toast.error(error.response?.data?.message || 'Failed to update profile image')
+		} finally {
+			setIsUploading(false)
+			event.target.value = ''
+		}
+	}
 
 	return (
 		<aside className="h-screen w-[var(--sidebar-width)] shrink-0 border-r border-[var(--color-border)] bg-[var(--color-sidebar-bg)]">
@@ -61,12 +80,25 @@ const Sidebar = () => {
 						src={profileImage}
 						alt="Owner profile"
 					/>
-					<span className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-border)] bg-white">
-						<img className="h-4 w-4" src={assets.edit_icon} alt="Edit profile" />
-					</span>
+					<button
+						type="button"
+						onClick={handleFileClick}
+						disabled={isUploading}
+						className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-border)] bg-white transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-70"
+						aria-label="Update profile image"
+					>
+						<img className="h-4 w-4" src={assets.upload_icon} alt="" aria-hidden="true" />
+					</button>
+					<input
+						ref={fileInputRef}
+						type="file"
+						accept="image/*"
+						className="hidden"
+						onChange={handleImageChange}
+					/>
 				</div>
 				<div className="mt-4 text-center text-base font-semibold text-[var(--color-text)]">
-					{user?.name || 'Owner'}
+					{isUploading ? 'Updating...' : user?.name || 'Owner'}
 				</div>
 			</div>
 

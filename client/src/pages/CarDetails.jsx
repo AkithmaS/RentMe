@@ -1,16 +1,32 @@
-import React, { useLayoutEffect } from 'react'
-import { Link, useLocation, useParams } from 'react-router-dom'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import { assets, dummyCarData } from '../assets/assets'
+import { assets } from '../assets/assets'
+import { useAppContext } from '../context/AppContext'
 import useRevealOnScroll from '../hooks/useRevealOnScroll'
+import { toast } from 'react-hot-toast'
 
 const CarDetails = () => {
   const location = useLocation()
+  const navigate = useNavigate()
   const { id } = useParams()
+  const { cars, fetchCars, currency, axios, token, setShowLogin } = useAppContext()
   const carFromState = location.state?.car
-  const carFromList = dummyCarData.find((item) => item._id === id)
+  const carFromList = cars.find((item) => item._id === id)
   const car = carFromState || carFromList
+  const [pickupDate, setPickupDate] = useState('')
+  const [returnDate, setReturnDate] = useState('')
+  const [isBooking, setIsBooking] = useState(false)
+  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false)
+  const [isAvailable, setIsAvailable] = useState(true)
+  const [availabilityMessage, setAvailabilityMessage] = useState('Select dates to check availability')
+
+  useEffect(() => {
+    if (!carFromState && !carFromList) {
+      fetchCars()
+    }
+  }, [carFromState, carFromList, fetchCars])
 
   useLayoutEffect(() => {
     const scrollTarget = document.scrollingElement || document.documentElement
@@ -21,12 +37,109 @@ const CarDetails = () => {
 
   useRevealOnScroll([id])
 
-  const featureList = [
-    'Leather Seats',
-    'Panoramic Sunroof',
-    'Wireless Charging',
-    '360 Camera',
-  ]
+  useEffect(() => {
+    let isActive = true
+
+    const checkCurrentAvailability = async () => {
+      if (!car || !pickupDate || !returnDate) {
+        setIsAvailable(true)
+        setAvailabilityMessage('Select dates to check availability')
+        return
+      }
+
+      if (new Date(returnDate) <= new Date(pickupDate)) {
+        setIsAvailable(false)
+        setAvailabilityMessage('Return date must be after pickup date')
+        return
+      }
+
+      try {
+        setIsCheckingAvailability(true)
+
+        const { data } = await axios.post('/api/booking/check-availability', {
+          pickupDate,
+          returnDate,
+          location: car.location,
+        })
+
+        if (!isActive) return
+
+        const matchingCar = data?.cars?.some((availableCar) => availableCar._id === car._id)
+
+        if (matchingCar) {
+          setIsAvailable(true)
+          setAvailabilityMessage('Available for the selected dates')
+        } else {
+          setIsAvailable(false)
+          setAvailabilityMessage('This car is already booked for the selected dates')
+        }
+      } catch (error) {
+        if (!isActive) return
+        setIsAvailable(false)
+        setAvailabilityMessage(error.response?.data?.message || 'Unable to check availability')
+      } finally {
+        if (isActive) {
+          setIsCheckingAvailability(false)
+        }
+      }
+    }
+
+    const timer = setTimeout(checkCurrentAvailability, 250)
+
+    return () => {
+      isActive = false
+      clearTimeout(timer)
+    }
+  }, [axios, car, pickupDate, returnDate])
+
+  const handleBookNow = async () => {
+    if (!token) {
+      setShowLogin(true)
+      return
+    }
+
+    if (car.isAvailable === false) {
+      toast.error('Unable to book as unavailable')
+      return
+    }
+
+    if (!pickupDate || !returnDate) {
+      toast.error('Please select pickup and return dates')
+      return
+    }
+
+    if (new Date(returnDate) <= new Date(pickupDate)) {
+      toast.error('Return date must be after pickup date')
+      return
+    }
+
+    if (!isAvailable) {
+      toast.error(availabilityMessage)
+      return
+    }
+
+    try {
+      setIsBooking(true)
+
+      const { data } = await axios.post('/api/booking/create-booking', {
+        car: car._id,
+        pickupDate,
+        returnDate,
+      })
+
+      if (!data.success) {
+        toast.error(data.message || 'Failed to create booking')
+        return
+      }
+
+      toast.success(data.message || 'Booking created successfully')
+      navigate('/MyBookings')
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to create booking')
+    } finally {
+      setIsBooking(false)
+    }
+  }
 
   if (!car) {
     return (
@@ -92,30 +205,25 @@ const CarDetails = () => {
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               <h2 className="text-lg font-semibold text-slate-900">Description</h2>
               <p className="text-sm leading-6 text-slate-600">{car.description}</p>
             </div>
 
-            <div className="space-y-3">
-              <h2 className="text-lg font-semibold text-slate-900">Features</h2>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {featureList.map((feature) => (
-                  <div key={feature} className="flex items-center gap-2 text-sm text-slate-600">
-                    <img className="h-4 w-4" src={assets.tick_icon} alt="Check" />
-                    {feature}
-                  </div>
-                ))}
-              </div>
-            </div>
           </section>
 
           <aside className="lg:sticky lg:top-24">
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex items-baseline gap-2 text-slate-900">
-                <span className="text-3xl font-semibold">${car.pricePerDay}</span>
+                <span className="text-3xl font-semibold">{currency} {car.pricePerDay}</span>
                 <span className="text-sm text-slate-500">per day</span>
               </div>
+
+              {car.isAvailable === false ? (
+                <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700">
+                  Unable to book as unavailable
+                </div>
+              ) : null}
 
               <div className="mt-6 space-y-4">
                 <label className="block text-sm font-medium text-slate-700">
@@ -123,6 +231,8 @@ const CarDetails = () => {
                   <input
                     className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none focus:border-slate-400"
                     type="date"
+                    value={pickupDate}
+                    onChange={(event) => setPickupDate(event.target.value)}
                   />
                 </label>
 
@@ -131,12 +241,22 @@ const CarDetails = () => {
                   <input
                     className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none focus:border-slate-400"
                     type="date"
+                    value={returnDate}
+                    onChange={(event) => setReturnDate(event.target.value)}
                   />
                 </label>
 
-                <button className="w-full rounded-lg bg-[#3B5BFC] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:brightness-110">
-                  Book Now
+                <button
+                  type="button"
+                  onClick={handleBookNow}
+                  disabled={isBooking || isCheckingAvailability || !isAvailable}
+                  className="w-full rounded-lg bg-[#3B5BFC] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {car.isAvailable === false ? 'Unavailable' : isBooking ? 'Booking...' : isCheckingAvailability ? 'Checking...' : 'Book Now'}
                 </button>
+                <p className={`text-center text-xs ${isAvailable ? 'text-emerald-600' : 'text-rose-600'}`}>
+                  {availabilityMessage}
+                </p>
                 <p className="text-center text-xs text-slate-500">
                   No credit card required to reserve
                 </p>

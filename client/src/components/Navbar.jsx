@@ -10,12 +10,12 @@ const Navbar = () => {
     <>
       <header className="sticky top-0 z-50 w-full border-b border-black/5 bg-white">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-6 py-4">
-          <div className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+          <Link className="flex items-center gap-2 text-lg font-semibold text-slate-900 transition hover:opacity-80" to="/Home">
             <span className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-white">
               <img className="h-full w-full object-contain" src="/favicon.svg" alt="RentMe logo" />
             </span>
             <span>RentMe</span>
-          </div>
+          </Link>
 
           <nav className="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
             <Link className="transition hover:text-slate-900" to="/Home">

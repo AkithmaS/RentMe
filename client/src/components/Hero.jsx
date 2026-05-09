@@ -1,6 +1,33 @@
-import React from 'react'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAppContext } from '../context/AppContext'
+import { locationOptions } from '../constants/carOptions'
 
 const Hero = () => {
+  const navigate = useNavigate()
+  const { setPickupDate, setReturnDate } = useAppContext()
+  const [location, setLocation] = useState('Colombo')
+  const [pickupDateValue, setPickupDateValue] = useState('2025-03-28')
+  const [returnDateValue, setReturnDateValue] = useState('2025-03-30')
+
+  const handleSearch = () => {
+    setPickupDate(pickupDateValue)
+    setReturnDate(returnDateValue)
+
+    const searchParams = new URLSearchParams()
+    if (location.trim()) {
+      searchParams.set('location', location.trim())
+    }
+    if (pickupDateValue) {
+      searchParams.set('pickupDate', pickupDateValue)
+    }
+    if (returnDateValue) {
+      searchParams.set('returnDate', returnDateValue)
+    }
+
+    navigate(`/cars?${searchParams.toString()}`)
+  }
+
   return (
     <section className="w-full bg-[#EEF1F8]">
       <div className="mx-auto flex w-full max-w-6xl flex-col items-center px-6 pb-20 pt-16 text-center">
@@ -21,11 +48,12 @@ const Hero = () => {
             </span>
             <select
               className="bg-transparent text-sm font-semibold text-slate-700 outline-none"
-              defaultValue="Bangalore"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
             >
-              <option>Bangalore</option>
-              <option>Mumbai</option>
-              <option>Delhi</option>
+              {locationOptions.map((option) => (
+                <option key={option}>{option}</option>
+              ))}
             </select>
           </div>
 
@@ -38,7 +66,8 @@ const Hero = () => {
             <input
               className="bg-transparent text-sm font-semibold text-slate-700 outline-none"
               type="date"
-              defaultValue="2025-03-28"
+              value={pickupDateValue}
+              onChange={(e) => setPickupDateValue(e.target.value)}
             />
           </div>
 
@@ -51,11 +80,16 @@ const Hero = () => {
             <input
               className="bg-transparent text-sm font-semibold text-slate-700 outline-none"
               type="date"
-              defaultValue="2025-03-30"
+              value={returnDateValue}
+              onChange={(e) => setReturnDateValue(e.target.value)}
             />
           </div>
 
-          <button className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-[#3B5BFC] px-6 py-3 text-sm font-semibold text-white shadow-md shadow-blue-300/50 transition hover:brightness-110 md:mt-0">
+          <button
+            type="button"
+            onClick={handleSearch}
+            className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-[#3B5BFC] px-6 py-3 text-sm font-semibold text-white shadow-md shadow-blue-300/50 transition hover:brightness-110 md:mt-0"
+          >
             <svg
               aria-hidden="true"
               viewBox="0 0 24 24"

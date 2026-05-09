@@ -1,10 +1,29 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { assets, dummyCarData } from '../assets/assets'
+import { toast } from 'react-hot-toast'
+import { assets } from '../assets/assets'
+import { useAppContext } from '../context/AppContext'
 
 const FeaturedVehicles = () => {
   const navigate = useNavigate()
-  const featured = dummyCarData.slice(0, 3)
+  const { cars, fetchCars, currency } = useAppContext()
+
+  useEffect(() => {
+    if (!cars.length) {
+      fetchCars()
+    }
+  }, [cars.length, fetchCars])
+
+  const featured = cars.slice(0, 3)
+
+  const handleCardClick = (car) => {
+    if (car.isAvailable === false) {
+      toast.error('Unable to book as unavailable')
+      return
+    }
+
+    navigate(`/cars/${car._id}`, { state: { car } })
+  }
 
   return (
     <section id="featured-vehicles" className="w-full bg-white">
@@ -23,12 +42,12 @@ const FeaturedVehicles = () => {
         </p>
 
         <div className="mt-12 grid w-full gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {featured.map((car, index) => (
+          {featured.length > 0 ? featured.map((car, index) => (
             <article
               key={car._id}
-              className="featured-card reveal cursor-pointer overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-md shadow-slate-200/60 transition hover:-translate-y-1 hover:shadow-lg"
+              className={`featured-card reveal overflow-hidden rounded-2xl border bg-white shadow-md shadow-slate-200/60 transition hover:-translate-y-1 hover:shadow-lg ${car.isAvailable === false ? 'cursor-not-allowed border-rose-200 opacity-80' : 'cursor-pointer border-slate-100'}`}
               style={{ '--reveal-delay': `${0.18 + index * 0.12}s` }}
-              onClick={() => navigate(`/cars/${car._id}`, { state: { car } })}
+              onClick={() => handleCardClick(car)}
             >
               <div className="relative">
                 <img
@@ -37,11 +56,11 @@ const FeaturedVehicles = () => {
                   alt={`${car.brand} ${car.model}`}
                   loading="lazy"
                 />
-                <span className="absolute left-3 top-3 rounded-full bg-[#3B5BFC] px-3 py-1 text-xs font-semibold text-white">
-                  Available Now
+                <span className={`absolute left-3 top-3 rounded-full px-3 py-1 text-xs font-semibold text-white ${car.isAvailable === false ? 'bg-rose-500' : 'bg-[#3B5BFC]'}`}>
+                  {car.isAvailable === false ? 'Unavailable' : 'Available Now'}
                 </span>
                 <span className="absolute bottom-3 right-3 rounded-full bg-black/80 px-3 py-1 text-xs font-semibold text-white">
-                  ${car.pricePerDay}/day
+                  {currency} {car.pricePerDay}/day
                 </span>
               </div>
 
@@ -73,7 +92,11 @@ const FeaturedVehicles = () => {
                 </div>
               </div>
             </article>
-          ))}
+          )) : (
+            <div className="col-span-full rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-sm text-slate-500">
+              No available cars found right now.
+            </div>
+          )}
         </div>
 
         <button

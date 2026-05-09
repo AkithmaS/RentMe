@@ -1,9 +1,16 @@
 import React from 'react'
+import { motion } from 'motion/react'
 import { assets } from '../assets/assets'
 
 const Footer = () => {
 	return (
-		<footer className="w-full bg-white">
+		<motion.footer
+			className="w-full bg-white"
+			initial={{ opacity: 0, y: 20 }}
+			whileInView={{ opacity: 1, y: 0 }}
+			viewport={{ once: true, amount: 0.15 }}
+			transition={{ duration: 0.45 }}
+		>
 			<div className="mx-auto flex w-full max-w-6xl flex-col px-6 pb-8 pt-16 text-sm text-slate-500">
 				<div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
 					<div className="flex flex-col gap-4">
@@ -67,7 +74,7 @@ const Footer = () => {
 					</div>
 				</div>
 			</div>
-		</footer>
+		</motion.footer>
 	)
 }
 

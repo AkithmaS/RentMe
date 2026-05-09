@@ -2,17 +2,27 @@ import { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
 import Login from './Login'
+import { motion } from 'motion/react'
 
 const Navbar = () => {
   const { user, logout, showLogin, setShowLogin } = useContext(AppContext)
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-black/5 bg-white">
+      <motion.header 
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="sticky top-0 z-50 w-full border-b border-black/5 bg-white">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-6 py-4">
           <Link className="flex items-center gap-2 text-lg font-semibold text-slate-900 transition hover:opacity-80" to="/Home">
             <span className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-white">
-              <img className="h-full w-full object-contain" src="/favicon.svg" alt="RentMe logo" />
+              <motion.img
+                whileHover={{ scale: 1.05 }}
+                src="/favicon.svg"
+                alt="RentMe logo"
+                className="h-full w-full object-contain"
+              />
             </span>
             <span>RentMe</span>
           </Link>
@@ -73,7 +83,7 @@ const Navbar = () => {
             </button>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       <Login isOpen={showLogin} onClose={() => setShowLogin(false)} />
     </>

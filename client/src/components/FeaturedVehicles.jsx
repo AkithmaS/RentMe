@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
+import { motion } from 'motion/react'
 import { assets } from '../assets/assets'
 import { useAppContext } from '../context/AppContext'
 
@@ -26,26 +27,46 @@ const FeaturedVehicles = () => {
   }
 
   return (
-    <section id="featured-vehicles" className="w-full bg-white">
+    <motion.section
+      id="featured-vehicles"
+      className="w-full bg-white"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="mx-auto flex w-full max-w-6xl flex-col items-center px-6 py-20 text-center">
-        <h2
+        <motion.h2
           className="reveal text-2xl font-bold text-slate-800 sm:text-3xl"
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ duration: 0.45 }}
           style={{ '--reveal-delay': '0s' }}
         >
           Featured Vehicles
-        </h2>
-        <p
+        </motion.h2>
+        <motion.p
           className="reveal mt-2 max-w-xl text-sm text-slate-500"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ duration: 0.45, delay: 0.08 }}
           style={{ '--reveal-delay': '0.12s' }}
         >
           Explore our selection of premium vehicles available for your next adventure.
-        </p>
+        </motion.p>
 
         <div className="mt-12 grid w-full gap-8 md:grid-cols-2 lg:grid-cols-3">
           {featured.length > 0 ? featured.map((car, index) => (
-            <article
+            <motion.article
               key={car._id}
               className={`featured-card reveal overflow-hidden rounded-2xl border bg-white shadow-md shadow-slate-200/60 transition hover:-translate-y-1 hover:shadow-lg ${car.isAvailable === false ? 'cursor-not-allowed border-rose-200 opacity-80' : 'cursor-pointer border-slate-100'}`}
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              whileHover={car.isAvailable === false ? undefined : { y: -6 }}
+              transition={{ duration: 0.45, delay: 0.04 * index }}
               style={{ '--reveal-delay': `${0.18 + index * 0.12}s` }}
               onClick={() => handleCardClick(car)}
             >
@@ -91,7 +112,7 @@ const FeaturedVehicles = () => {
                   </div>
                 </div>
               </div>
-            </article>
+            </motion.article>
           )) : (
             <div className="col-span-full rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-sm text-slate-500">
               No available cars found right now.
@@ -99,16 +120,22 @@ const FeaturedVehicles = () => {
           )}
         </div>
 
-        <button
+        <motion.button
           onClick={() => navigate('/cars')}
           className="reveal mt-12 inline-flex items-center gap-2 rounded-lg border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-600 transition hover:border-slate-300 hover:text-slate-800"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.8 }}
+          transition={{ duration: 0.35, delay: 0.12 }}
           style={{ '--reveal-delay': '0.6s' }}
         >
           Explore all cars
           <img className="h-4 w-4" src={assets.arrow_icon} alt="Arrow" />
-        </button>
+        </motion.button>
       </div>
-    </section>
+    </motion.section>
   )
 }
 

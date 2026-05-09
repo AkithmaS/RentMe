@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'motion/react'
 import { useAppContext } from '../context/AppContext'
 import { locationOptions } from '../constants/carOptions'
 
@@ -29,17 +30,28 @@ const Hero = () => {
   }
 
   return (
-    <section className="w-full bg-[#EEF1F8]">
+    <motion.section
+      className="w-full bg-[#EEF1F8]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
       <div className="mx-auto flex w-full max-w-6xl flex-col items-center px-6 pb-20 pt-16 text-center">
-        <h1
+        <motion.h1
           className="reveal text-3xl font-bold text-slate-800 sm:text-4xl md:text-5xl"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
           style={{ '--reveal-delay': '0s' }}
         >
           Luxury Cars on Rent
-        </h1>
+        </motion.h1>
 
-        <div
+        <motion.div
           className="reveal mt-10 flex w-full max-w-3xl flex-col items-center gap-4 rounded-3xl bg-white px-6 py-5 shadow-lg shadow-slate-200/80 md:flex-row md:justify-between"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.1 }}
           style={{ '--reveal-delay': '0.12s' }}
         >
           <div className="flex w-full flex-col gap-1 text-left md:w-auto">
@@ -85,10 +97,12 @@ const Hero = () => {
             />
           </div>
 
-          <button
+          <motion.button
             type="button"
             onClick={handleSearch}
             className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-[#3B5BFC] px-6 py-3 text-sm font-semibold text-white shadow-md shadow-blue-300/50 transition hover:brightness-110 md:mt-0"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
           >
             <svg
               aria-hidden="true"
@@ -102,11 +116,14 @@ const Hero = () => {
               <path d="M20 20l-3.5-3.5" />
             </svg>
             Search
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
-        <div
+        <motion.div
           className="reveal mt-12 flex w-full items-center justify-center"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, delay: 0.15 }}
           style={{ '--reveal-delay': '0.24s' }}
         >
           <img
@@ -115,9 +132,9 @@ const Hero = () => {
             alt="Luxury sedan"
             loading="lazy"
           />
-        </div>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   )
 }
 

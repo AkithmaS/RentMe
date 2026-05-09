@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { toast } from 'react-hot-toast';
+import { motion } from 'motion/react'
 import { assets } from '../assets/assets';
 import { useAppContext } from '../context/AppContext'
 
@@ -67,12 +68,12 @@ const Cars = () => {
 
       {/* Hero Section */}
       <div className="w-full bg-[#F5F8FF] py-16 text-center">
-        <h1 className="text-3xl font-bold text-slate-800 md:text-4xl reveal" style={{ '--reveal-delay': '0s' }}>
+        <motion.h1 className="text-3xl font-bold text-slate-800 md:text-4xl reveal" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} style={{ '--reveal-delay': '0s' }}>
           Available Cars
-        </h1>
-        <p className="mt-3 text-slate-500 reveal" style={{ '--reveal-delay': '0.1s' }}>
+        </motion.h1>
+        <motion.p className="mt-3 text-slate-500 reveal" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.05 }} style={{ '--reveal-delay': '0.1s' }}>
           Browse our selection of premium vehicles available for your next adventure
-        </p>
+        </motion.p>
 
         {/* Search Bar */}
         <div className="reveal mx-auto mt-8 flex max-w-2xl items-center gap-3 rounded-full bg-white px-5 py-3 shadow-sm transition-all focus-within:ring-2 focus-within:ring-blue-500 focus-within:shadow-md" style={{ '--reveal-delay': '0.2s' }}>
@@ -100,9 +101,14 @@ const Cars = () => {
         {filteredCars.length > 0 ? (
           <div className="grid w-full gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {filteredCars.map((car, index) => (
-              <article
+              <motion.article
                 key={car._id}
                 className={`reveal group overflow-hidden rounded-2xl border bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl ${car.isAvailable === false ? 'cursor-not-allowed border-rose-200 opacity-80' : 'cursor-pointer border-slate-100'}`}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                whileHover={car.isAvailable === false ? undefined : { y: -6 }}
+                transition={{ duration: 0.45, delay: 0.04 * index }}
                 style={{
                   '--reveal-delay': `${0.1 * index}s`,
                   animation: `slideUp 0.6s ease-out ${0.1 * index}s backwards`
@@ -157,7 +163,7 @@ const Cars = () => {
                     </div>
                   </div>
                 </div>
-              </article>
+              </motion.article>
             ))}
           </div>
         ) : (

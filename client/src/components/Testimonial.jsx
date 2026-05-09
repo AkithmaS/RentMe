@@ -1,4 +1,5 @@
 import React from 'react'
+import { motion } from 'motion/react'
 import { assets } from '../assets/assets'
 
 const testimonials = [
@@ -30,27 +31,40 @@ const testimonials = [
 
 const Testimonial = () => {
     return (
-        <section className="w-full bg-white">
+        <motion.section className="w-full bg-white" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.5 }}>
             <div className="mx-auto flex w-full max-w-6xl flex-col items-center px-6 pb-20 text-center">
-                <h2
+                <motion.h2
                     className="reveal text-2xl font-bold text-slate-800 sm:text-3xl"
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.5 }}
+                    transition={{ duration: 0.4 }}
                     style={{ '--reveal-delay': '0s' }}
                 >
                     What Our Customers Say
-                </h2>
-                <p
+                </motion.h2>
+                <motion.p
                     className="reveal mt-3 max-w-2xl text-sm text-slate-500"
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.5 }}
+                    transition={{ duration: 0.4, delay: 0.08 }}
                     style={{ '--reveal-delay': '0.12s' }}
                 >
                     Discover why discerning travelers choose RentMe for their luxury accommodations
                     around the world.
-                </p>
+                </motion.p>
 
                 <div className="mt-12 grid w-full gap-8 md:grid-cols-2 lg:grid-cols-3">
                     {testimonials.map((testimonial, index) => (
-                        <article
+                        <motion.article
                             key={testimonial.id}
                             className="testimonial-card reveal relative rounded-2xl border border-slate-100 bg-white p-6 text-left shadow-md shadow-slate-200/60"
+                            initial={{ opacity: 0, y: 18 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, amount: 0.3 }}
+                            whileHover={{ y: -4 }}
+                            transition={{ duration: 0.45, delay: 0.05 * index }}
                             style={{ '--reveal-delay': `${0.18 + index * 0.12}s` }}
                         >
                             <div className="flex items-center gap-3">
@@ -82,11 +96,11 @@ const Testimonial = () => {
                             </div>
 
                             <p className="mt-4 text-sm text-slate-500">"{testimonial.text}"</p>
-                        </article>
+                        </motion.article>
                     ))}
                 </div>
             </div>
-        </section>
+        </motion.section>
     )
 }
 

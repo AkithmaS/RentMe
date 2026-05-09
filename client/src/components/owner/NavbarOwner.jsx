@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { dummyUserData } from '../../assets/assets'
 import { useAppContext } from '../../context/AppContext'
+import { motion } from 'motion/react'
 
 const getStoredUser = () => {
 	if (typeof window === 'undefined') return dummyUserData
@@ -29,10 +30,20 @@ const NavbarOwner = () => {
 	return (
 		<header className="relative w-full border-b border-[var(--color-border)] bg-[var(--color-sidebar-bg)]">
 			<div className="absolute left-0 top-0 h-1 w-full bg-[#111827]" />
-			<div className="flex h-[var(--navbar-height)] items-center justify-between px-8">
+			<motion.div
+				initial={{ y: -100, opacity: 0 }}
+				animate={{ y: 0, opacity: 1 }}
+				transition={{ duration: 0.5 }}
+				className="flex h-[var(--navbar-height)] items-center justify-between px-8"
+			>
 				<Link className="flex items-center gap-2 text-lg font-semibold text-slate-900 transition hover:opacity-80" to="/Home">
 					<span className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-white">
-						<img className="h-full w-full object-contain" src="/favicon.svg" alt="RentMe logo" />
+						<motion.img
+							whileHover={{ scale: 1.05 }}
+							className="h-full w-full object-contain"
+							src="/favicon.svg"
+							alt="RentMe logo"
+						/>
 					</span>
 					<span>RentMe</span>
 				</Link>
@@ -45,7 +56,7 @@ const NavbarOwner = () => {
 					</Link>
 					<div className="text-sm font-medium text-slate-600">Welcome, {user?.name || 'Owner'}</div>
 				</div>
-			</div>
+			</motion.div>
 		</header>
 	)
 }

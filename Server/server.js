@@ -5,6 +5,7 @@ import connectDB from './configs/db.js';
 import userRouter from './routes/userRoutes.js';
 import ownerRouter from './routes/ownerRoutes.js';
 import bookingRouter from './routes/bookingRoutes.js';
+import { getCars } from './controllers/userController.js';
 
 
 const app = express()
@@ -15,6 +16,8 @@ app.use(express.json());
 app.get('/', (req, res) => {
     res.send('Server is running');
 });
+
+app.get('/api/cars', getCars);
 
 const PORT = process.env.PORT || 3000;
 

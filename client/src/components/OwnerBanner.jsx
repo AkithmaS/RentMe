@@ -1,7 +1,37 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
 import { assets } from '../assets/assets'
+import { useAppContext } from '../context/AppContext'
 
 const OwnerBanner = () => {
+  const { axios, user, setUser, setIsOwner, fetchUser } = useAppContext()
+  const navigate = useNavigate()
+
+  const handleListYourCar = async () => {
+    if (!user) {
+      toast.error('Please log in first')
+      return
+    }
+
+    try {
+      const { data } = await axios.post('/api/owner/change-role')
+
+      if (!data.success) {
+        toast.error(data.message || 'Failed to update account role')
+        return
+      }
+
+      await fetchUser()
+      setUser((currentUser) => (currentUser ? { ...currentUser, role: 'owner' } : currentUser))
+      setIsOwner(true)
+      toast.success('Your account is now an owner account')
+      navigate('/owner/dashboard')
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to update account role')
+    }
+  }
+
   return (
     <section className="w-full bg-white">
       <div className="mx-auto w-full max-w-6xl px-6 pb-20">
@@ -15,7 +45,11 @@ const OwnerBanner = () => {
               We take care of insurance, driver verification, and secure payments — so
               you can earn passive income, stress-free.
             </p>
-            <button className="mt-6 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-[#3B5BFC] shadow-sm transition hover:brightness-95">
+            <button
+              className="mt-6 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-[#3B5BFC] shadow-sm transition hover:brightness-95"
+              onClick={handleListYourCar}
+              type="button"
+            >
               List your car
             </button>
           </div>

@@ -4,18 +4,18 @@ import { AppContext } from '../context/AppContext'
 import Login from './Login'
 
 const Navbar = () => {
-  const { user, isOwner, logout, showLogin, setShowLogin } = useContext(AppContext)
+  const { user, logout, showLogin, setShowLogin } = useContext(AppContext)
 
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-black/5 bg-white">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-6 py-4">
-          <div className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+          <Link className="flex items-center gap-2 text-lg font-semibold text-slate-900 transition hover:opacity-80" to="/Home">
             <span className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-white">
               <img className="h-full w-full object-contain" src="/favicon.svg" alt="RentMe logo" />
             </span>
             <span>RentMe</span>
-          </div>
+          </Link>
 
           <nav className="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
             <Link className="transition hover:text-slate-900" to="/Home">
@@ -49,8 +49,11 @@ const Navbar = () => {
               />
             </div>
 
-            {isOwner ? (
-              <Link className="text-sm font-medium text-slate-600 hover:text-slate-900" to="/owner/dashboard">
+            {user ? (
+              <Link
+                className="rounded-full border border-[#3B5BFC] px-5 py-2 text-sm font-semibold text-[#3B5BFC] transition hover:bg-[#eff4ff]"
+                to="/owner/dashboard"
+              >
                 Dashboard
               </Link>
             ) : null}

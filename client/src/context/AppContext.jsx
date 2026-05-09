@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
@@ -9,7 +9,7 @@ export const AppContext = createContext()
 
 export const AppProvider = ({ children }) => {
     const navigate = useNavigate()
-    const currency = import.meta.env.VITE_CURRENCY || '$'
+    const currency = import.meta.env.VITE_CURRENCY || 'LKR'
     const [token, setToken] = useState(localStorage.getItem('token') || null)
     const [user, setUser] = useState(null)
     const [isOwner, setIsOwner] = useState(false)
@@ -18,9 +18,9 @@ export const AppProvider = ({ children }) => {
     const [returnDate, setReturnDate] = useState(null)
     const [cars, setCars] = useState([])
 
-    const fetchUser = async () => {
+    const fetchUser = useCallback(async () => {
         try {
-            const { data } = await axios.get('/api/user')
+            const { data } = await axios.get('/api/user/data')
 
             if (data.success) {
                 setUser(data.user)
@@ -32,9 +32,9 @@ export const AppProvider = ({ children }) => {
             toast.error('Session expired. Please login again.')
             navigate('/Home')
         }
-    }
+    }, [navigate])
 
-    const fetchCars = async () => {
+    const fetchCars = useCallback(async () => {
         try {
             const { data } = await axios.get('/api/cars')
 
@@ -46,16 +46,30 @@ export const AppProvider = ({ children }) => {
         } catch (error) {
             toast.error('Failed to fetch cars')
         }
-    }
+    }, [])
 
-    const logout = () => {
+    const fetchOwnerCars = useCallback(async () => {
+        try {
+            const { data } = await axios.get('/api/owner/cars')
+
+            if (data.success) {
+                setCars(data.cars)
+            } else {
+                toast.error(data.message || 'Failed to fetch owner cars')
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Failed to fetch owner cars')
+        }
+    }, [])
+
+    const logout = useCallback(() => {
         localStorage.removeItem('token')
         setToken(null)
         setUser(null)
         setIsOwner(false)
         delete axios.defaults.headers.common.Authorization
         toast.success('Logged out successfully')
-    }
+    }, [])
 
     useEffect(() => {
         const storedToken = localStorage.getItem('token')
@@ -83,10 +97,12 @@ export const AppProvider = ({ children }) => {
         setToken,
         fetchUser,
         isOwner,
+        setIsOwner,
         showLogin,
         setShowLogin,
         logout,
         fetchCars,
+        fetchOwnerCars,
         cars,
         setCars,
         pickupDate,

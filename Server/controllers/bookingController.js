@@ -5,12 +5,21 @@ import Car from "../models/Car.js";
 //fuction to check availability of car for given dates
 
 const checkAvailability = async(car, pickupDate, returnDate) => {
-    const bookings = await Booking.find({ 
+    const pickup = new Date(pickupDate)
+    const returnAt = new Date(returnDate)
+
+    if (Number.isNaN(pickup.getTime()) || Number.isNaN(returnAt.getTime())) {
+        return false
+    }
+
+    const overlappingBooking = await Booking.findOne({ 
         car,
-        pickupDate: { $lt: returnDate },
-        returnDate: { $gt: pickupDate }
+        status: { $ne: 'cancelled' },
+        pickupDate: { $lte: returnAt },
+        returnDate: { $gte: pickup }
      })
-     return bookings.length === 0;
+
+     return !overlappingBooking;
      }
      
      //api to check availability of cars for the given date and location// 
@@ -39,6 +48,17 @@ export const createBooking = async(req, res) => {
         const {_id} = req.user;
         const {car,pickupDate, returnDate} = req.body;
 
+        const pickup = new Date(pickupDate)
+        const returnAt = new Date(returnDate)
+
+        if (Number.isNaN(pickup.getTime()) || Number.isNaN(returnAt.getTime())) {
+            return res.json({ success: false, message: 'Please provide valid pickup and return dates' })
+        }
+
+        if (returnAt <= pickup) {
+            return res.json({ success: false, message: 'Return date must be after pickup date' })
+        }
+
         const isAvailable = await checkAvailability(car, pickupDate, returnDate)
         if (!isAvailable) {
             return res.json({ success: false, message: 'Car is not available for the selected dates' })
@@ -46,10 +66,12 @@ export const createBooking = async(req, res) => {
 
         const carData = await Car.findById(car)
 
+        if (!carData) {
+            return res.json({ success: false, message: 'Car not found' })
+        }
+
         //calculate price based on pickup and return date
-        const picked = new Date(pickupDate);
-        const returned = new Date(returnDate);
-        const noofDays = Math.ceil((returned - picked) / (1000 * 60 * 60 * 24));
+        const noofDays = Math.ceil((returnAt - pickup) / (1000 * 60 * 60 * 24));
         const price = carData.pricePerDay * noofDays;
 
       await Booking.create({
@@ -72,8 +94,7 @@ res.json({ success: true, message: 'Booking created successfully' })
     export const getUserBookings = async(req, res) => {
         try {
             const {_id} = req.user;
-            const bookings = (await Booking.find({ user: _id }).populate('car')).sort
-            ({createdAt: -1})
+            const bookings = await Booking.find({ user: _id }).populate('car').sort({ createdAt: -1 })
             res.json({ success: true, bookings })
         }catch (error) {
             console.log(error.message);
@@ -84,10 +105,7 @@ res.json({ success: true, message: 'Booking created successfully' })
         //api to get bookings of a owner
 export const getOwnerBookings = async(req, res) => {
     try {
-       if(req.user.role !== 'owner') {
-        return res.json({ success: false, message: 'Not authorized to access owner bookings' })
-       }
-       const bookings = (await Booking.find({ owner: req.user._id }).populate('car user').select('-password')).sort({createdAt: -1})
+       const bookings = await Booking.find({ owner: req.user._id }).populate('car user').select('-password').sort({ createdAt: -1 })
        res.json({ success: true, bookings })
     }catch (error) {
         console.log(error.message);

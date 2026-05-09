@@ -38,7 +38,7 @@ const FeaturedVehicles = () => {
       <div className="mx-auto flex w-full max-w-6xl flex-col items-center px-6 py-20 text-center">
         <motion.h2
           className="reveal text-2xl font-bold text-slate-800 sm:text-3xl"
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 17 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.6 }}
           transition={{ duration: 0.45 }}
